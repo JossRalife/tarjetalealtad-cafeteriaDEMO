@@ -8,38 +8,143 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary-color: #8A2BE2; --secondary-color: #28a745; --gemini-color: #ff69b4; --background-color: #f4f6f8; --card-color: #ffffff; --text-color: #333; --light-text: #777; --border-color: #ddd; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); margin: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        :root { 
+            --primary-color: #8A2BE2; 
+            --secondary-color: #28a745; 
+            --gemini-color: #ff69b4; 
+            --background-color: #f4f6f8; 
+            --card-color: #ffffff; 
+            --text-color: #333; 
+            --light-text: #777; 
+            --border-color: #ddd; 
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--background-color); 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            min-height: 100vh; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
         .app-container { width: 100%; max-width: 420px; }
-        .view { display: none; } .view.active { display: block; animation: fadeIn 0.5s; }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .card { background-color: var(--card-color); padding: 30px 35px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; margin-bottom: 20px; }
-        .card-header { margin-bottom: 25px; display: flex; flex-direction: column; align-items: center; }
-        .card-header .icon, .card-header img { width: 50px; height: 50px; margin-bottom: 10px; font-size: 50px; line-height: 1; }
+        
+        .card { 
+            background-color: var(--card-color); 
+            padding: 30px 35px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        .card-header { 
+            margin-bottom: 25px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card-header .icon, .card-header img { 
+            width: 50px; 
+            height: 50px; 
+            margin-bottom: 10px; 
+            font-size: 50px;
+            line-height: 1;
+        }
         .card-header h2 { font-size: 1.8em; margin: 0; color: var(--text-color); }
         .card-header p { color: var(--light-text); margin: 5px 0 0; }
+        
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 0.9em; }
-        .form-group input { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .form-group input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            font-size: 1em; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: none; 
+            font-size: 1em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+        }
         .btn:disabled { background-color: #ccc; cursor: not-allowed; }
         .btn-primary { background-color: var(--primary-color); color: white; }
         .btn-secondary { background-color: var(--secondary-color); color: white; }
-        .text-link { color: var(--primary-color); cursor: pointer; font-weight: 500; display: inline-block; margin-top: 20px; font-size: 0.9em; }
-        #loyaltyCardView .card { background: linear-gradient(145deg, var(--primary-color), #6a1b9a); color: white; }
+        
+        .text-link { 
+            color: var(--primary-color); 
+            cursor: pointer; 
+            font-weight: 500; 
+            display: inline-block; 
+            margin-top: 20px; 
+            font-size: 0.9em;
+        }
+        
+        #loyaltyCardView .card { 
+            background: linear-gradient(145deg, var(--primary-color), #6a1b9a); 
+            color: white; 
+        }
         #loyaltyCardView h2, #loyaltyCardView p { color: white; }
         #loyaltyCardView .card-header p { color: rgba(255,255,255,0.8); }
+
         .progress-bar { width: 100%; background-color: rgba(255,255,255,0.3); border-radius: 10px; height: 10px; margin: 10px 0; overflow: hidden;}
         .progress-bar-fill { height: 100%; background-color: #FFD700; border-radius: 10px; transition: width 0.5s ease-in-out; }
+        
         .stamps-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 25px 0; }
-        .stamp { width: 100%; padding-bottom: 100%; border-radius: 50%; background-color: #FFD700; display: flex; justify-content: center; align-items: center; position: relative; font-size: 1.5em; }
+        .stamp { 
+            width: 100%; 
+            padding-bottom: 100%; 
+            border-radius: 50%; 
+            background-color: #FFD700; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative;
+            font-size: 1.5em;
+        }
         .stamp.empty { background-color: rgba(255,255,255,0.3); border: 2px dashed white; }
         .stamp.reward { background-color: #FFC107; }
         .stamp-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
         .actions .btn { margin-bottom: 10px; }
-        .ai-result-box { margin-top: 25px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; text-align: left; border: 1px solid var(--border-color); display: none; }
-        .ai-result-box h4 { margin: 0 0 10px 0; color: var(--primary-color); }
-        .ai-result-box p { margin: 0; line-height: 1.6; }
+        
+        .ai-result-box { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background-color: #f8f9fa; 
+            border-radius: 10px; 
+            text-align: left; 
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        .ai-result-box h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+        .ai-result-box p {
+            margin: 0;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        .prize-display {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: -10px;
+            padding-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -48,8 +153,14 @@
     <div id="loginView" class="view active">
         <div class="card">
             <div class="card-header">
+                <!-- ▼▼▼ 1. PARA CAMBIAR EL LOGO ▼▼▼ -->
+                <!-- Reemplaza el <div> con <img src="URL_DEL_LOGO"> si prefieres una imagen -->
                 <div class="icon">☕</div>
-                <h2 id="loginBusinessName">Café Delicioso</h2>
+                
+                <!-- ▼▼▼ 2. PARA CAMBIAR EL NOMBRE DEL NEGOCIO ▼▼▼ -->
+                <h2 id="loginBusinessName"></h2>
+                
+                <!-- ▼▼▼ 3. PARA CAMBIAR LA FRASE DE BIENVENIDA ▼▼▼ -->
                 <p>Consulta tu tarjeta de lealtad</p>
             </div>
             <form id="loginForm">
@@ -83,11 +194,12 @@
             <div class="progress-bar"><div class="progress-bar-fill" id="progressBarFill"></div></div>
             <div class="stamps-grid" id="stampsGrid"></div>
             <p id="stampsRemainingText"></p>
+            <p class="prize-display" id="prizeTextDisplay"></p>
         </div>
         <div class="card actions">
             <h3>Acciones</h3>
             <button class="btn btn-secondary" id="goToTicket">Validar Compra</button>
-            <button class="btn btn-primary" style="background-color: var(--gemini-color);" id="goToAiBarista">Sugerencia del Barista AI ✨</button>
+            <button class="btn btn-primary" style="background-color: var(--gemini-color);" id="goToAiBarista">La Sabiduría del Barista ✨</button>
             <button class="btn btn-primary" style="background-color: #6c757d;" id="logoutButton">Salir</button>
         </div>
     </div>
@@ -105,16 +217,12 @@
     
     <div id="aiBaristaView" class="view">
         <div class="card">
-            <div class="card-header"><div class="icon">✨</div><h2>Barista AI</h2><p>Dime qué se te antoja y te haré una recomendación.</p></div>
+            <div class="card-header"><div class="icon">🔮</div><h2>Tu galleta de la suerte</h2><p>Presiona el botón para recibir tu frase del día.</p></div>
             <form id="aiBaristaForm">
-                <div class="form-group">
-                    <label for="aiPrompt">Ej: "Algo refrescante", "un postre líquido", "el sabor del otoño"</label>
-                    <input type="text" id="aiPrompt" placeholder="¿Cómo te sientes o qué buscas?" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="background-color: var(--gemini-color);">Obtener Sugerencia</button>
+                <button type="submit" class="btn btn-primary" style="background-color: var(--gemini-color);">Obtener mi Frase</button>
             </form>
             <div class="ai-result-box" id="aiResultBox">
-                 <h4>Recomendación del Barista:</h4>
+                 <h4>Tu frase del día:</h4>
                  <p id="aiResultText"></p>
             </div>
             <a class="text-link" id="backToLoyaltyFromAi">← Volver a mi tarjeta</a>
@@ -125,22 +233,27 @@
 <script>
     const app = {
         config: {
-            scriptUrl: "https://script.google.com/macros/s/AKfycbzNF9FTkE24e9SS6Q8KcejiY0f5R3-GiBYFPeRI4jH7gG_oqAZ8df5B4Hp3tNHuhGHR/exec",
+            // ▼▼▼ 1. Pega la URL de tu Google Apps Script ▼▼▼
+            scriptUrl: "https://script.google.com/macros/s/AKfycbyvpE_-wYZd0a3v5yatwWzyTV-4bFBePi8jxy5dRONBBKVsuTkNa32StqBuiIILF3SQ/exec",
+            
+            // ▼▼▼ 2. Cambia este ID por el de cada negocio ▼▼▼
+            // Debe coincidir con el `BusinessID` de tu hoja "Negocios".
             businessId: "cafe-delicioso", 
+            
+            // ▼▼▼ 3. Personaliza los detalles del negocio ▼▼▼
             businessName: "Café Delicioso",
             totalStamps: 10,
+            prizeText: "Premio: ¡Un croissant!"
         },
         state: { currentUser: null },
         init() {
             document.getElementById('loginBusinessName').textContent = this.config.businessName;
             
-            // --- Listeners de los formularios ---
             document.getElementById('loginForm').addEventListener('submit', this.handleLogin.bind(this));
             document.getElementById('registerForm').addEventListener('submit', this.handleRegister.bind(this));
             document.getElementById('ticketForm').addEventListener('submit', this.handleTicket.bind(this));
             document.getElementById('aiBaristaForm').addEventListener('submit', this.handleAiRecommendation.bind(this));
 
-            // --- Listeners de los enlaces y botones de navegación ---
             document.getElementById('goToRegister').addEventListener('click', () => this.navigateTo('registerView'));
             document.getElementById('goToLogin').addEventListener('click', () => this.navigateTo('loginView'));
             document.getElementById('goToTicket').addEventListener('click', () => this.navigateTo('ticketView'));
@@ -156,13 +269,12 @@
                 this.navigateTo('loyaltyCardView');
             }
         },
-        // ... (El resto del código JavaScript no necesita cambios, se añade abajo)
         setLoading(form, isLoading) {
             const button = form.querySelector('button[type="submit"]');
             if (!button) return;
             if (!button.dataset.originalText && isLoading) button.dataset.originalText = button.textContent;
             button.disabled = isLoading;
-            button.textContent = isLoading ? 'Procesando...' : button.dataset.originalText;
+            button.textContent = isLoading ? 'Procesando...' : (button.dataset.originalText || 'Enviar');
         },
         async apiCall(action, data) {
             const payload = { ...data, businessId: this.config.businessId };
@@ -234,34 +346,19 @@
             const aiResultBox = document.getElementById('aiResultBox');
             const aiResultText = document.getElementById('aiResultText');
             aiResultBox.style.display = 'none';
-            const userInput = document.getElementById('aiPrompt').value;
-            const systemPrompt = `Eres un barista experto en '${this.config.businessName}'. Un cliente te dice que le apetece '${userInput}'. Sugiérele una bebida de cafetería y dale una descripción antojable en menos de 40 palabras. Responde únicamente con la sugerencia, empezando directamente con el nombre de la bebida en negritas.`;
-            const result = await this.geminiApiCall(systemPrompt);
+            const result = await this.apiCall('getAiSuggestion', {});
             this.setLoading(e.target, false);
-            if (result) {
-                aiResultText.innerHTML = result;
+            if (result.status === 'success' && result.text) {
+                aiResultText.innerHTML = result.text;
                 aiResultBox.style.display = 'block';
             } else {
-                aiResultText.textContent = 'Lo siento, mis ideas se fueron a tomar un café. Inténtalo de nuevo.';
+                aiResultText.textContent = 'Lo siento, la inspiración del barista está en pausa. Inténtalo de nuevo.';
                 aiResultBox.style.display = 'block';
             }
         },
-        async geminiApiCall(prompt) {
-            const apiKey = ""; const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ parts: [{ text: prompt }] }] };
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) { console.error("Error en la respuesta de la API de Gemini:", await response.text()); return null; }
-                const result = await response.json(); 
-                const candidate = result.candidates?.[0];
-                if (candidate && candidate.content?.parts?.[0]?.text) { return candidate.content.parts[0].text; }
-                else { return "No se pudo obtener una respuesta válida."; }
-            } catch (error) { console.error("Error al llamar a la API de Gemini:", error); return null; }
-        },
         renderLoyaltyCard() {
-            // El nombre del negocio ahora se actualiza aquí también
             document.getElementById('loyaltyBusinessName').textContent = this.config.businessName;
-
+            document.getElementById('prizeTextDisplay').textContent = this.config.prizeText;
             const user = this.state.currentUser;
             document.getElementById('userName').textContent = user.name.split(' ')[0];
             const stamps = parseInt(user.stamps);
