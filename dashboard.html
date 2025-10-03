@@ -3,270 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programa de Lealtad</title>
+    <title>Dashboard de Negocios</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --primary-color: #8A2BE2; 
-            --secondary-color: #28a745; 
-            --gemini-color: #ff69b4; 
             --background-color: #f4f6f8; 
             --card-color: #ffffff; 
             --text-color: #333; 
-            --light-text: #777; 
-            --border-color: #ddd; 
+            --border-color: #e0e0e0; 
         }
         body { 
             font-family: 'Poppins', sans-serif; 
             background-color: var(--background-color); 
             margin: 0; 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start; 
-            min-height: 100vh; 
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 20px; 
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
-        .app-container { width: 100%; max-width: 420px; }
-        .view { display: none; }
+        .container { 
+            width: 100%;
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .view { display: none; } 
         .view.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        h1, h2 { color: var(--primary-color); }
         
         .card { 
             background-color: var(--card-color); 
-            padding: 30px 35px; 
-            border-radius: 20px; 
+            border-radius: 12px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-            text-align: center; 
+            padding: 30px; 
             margin-bottom: 20px; 
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .card-header { 
-            margin-bottom: 25px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+
+        #crmView .card {
+            max-width: none; /* Permitir que la tarjeta del CRM ocupe más espacio */
         }
-        .card-header .icon, .card-header img { 
-            width: 50px; 
-            height: 50px; 
-            margin-bottom: 10px; 
-            font-size: 50px;
-            line-height: 1;
-        }
-        .card-header h2 { font-size: 1.8em; margin: 0; color: var(--text-color); }
-        .card-header p { color: var(--light-text); margin: 5px 0 0; }
         
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 0.9em; }
-        .form-group input { 
+        input { 
             width: 100%; 
-            padding: 12px 15px; 
-            border-radius: 8px; 
+            padding: 12px; 
             border: 1px solid var(--border-color); 
+            border-radius: 8px; 
             font-size: 1em; 
+            margin-bottom: 20px; 
             box-sizing: border-box; 
-            font-family: 'Poppins', sans-serif;
         }
         .btn { 
             width: 100%; 
             padding: 15px; 
-            border-radius: 10px; 
+            border-radius: 8px; 
             border: none; 
             font-size: 1em; 
             font-weight: 600; 
             cursor: pointer; 
-            transition: all 0.2s ease; 
-        }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
-        .btn-primary { background-color: var(--primary-color); color: white; }
-        .btn-secondary { background-color: var(--secondary-color); color: white; }
-        
-        .text-link { 
-            color: var(--primary-color); 
-            cursor: pointer; 
-            font-weight: 500; 
-            display: inline-block; 
-            margin-top: 20px; 
-            font-size: 0.9em;
-        }
-        
-        #loyaltyCardView .card { 
-            background: linear-gradient(145deg, var(--primary-color), #6a1b9a); 
+            background-color: var(--primary-color); 
             color: white; 
+            transition: background-color 0.2s;
         }
-        #loyaltyCardView h2, #loyaltyCardView p { color: white; }
-        #loyaltyCardView .card-header p { color: rgba(255,255,255,0.8); }
+        .btn:hover {
+            background-color: #6a1b9a;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .btn-logout {
+            background-color:#6c757d; 
+            width:auto; 
+            padding:10px 20px; 
+            float: right;
+            margin-bottom: 15px;
+        }
+        .btn-logout:hover {
+            background-color: #5a6268;
+        }
 
-        .progress-bar { width: 100%; background-color: rgba(255,255,255,0.3); border-radius: 10px; height: 10px; margin: 10px 0; overflow: hidden;}
-        .progress-bar-fill { height: 100%; background-color: #FFD700; border-radius: 10px; transition: width 0.5s ease-in-out; }
-        
-        .stamps-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 25px 0; }
-        .stamp { 
+        .table-container {
+            overflow-x: auto;
+        }
+        table { 
             width: 100%; 
-            padding-bottom: 100%; 
-            border-radius: 50%; 
-            background-color: #FFD700; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            position: relative;
-            font-size: 1.5em;
+            border-collapse: collapse; 
         }
-        .stamp.empty { background-color: rgba(255,255,255,0.3); border: 2px dashed white; }
-        .stamp.reward { background-color: #FFC107; }
-        .stamp-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
-        .actions .btn { margin-bottom: 10px; }
-        
-        .ai-result-box { 
-            margin-top: 25px; 
-            padding: 20px; 
-            background-color: #f8f9fa; 
-            border-radius: 10px; 
+        th, td { 
+            padding: 12px 15px; 
             text-align: left; 
-            border: 1px solid var(--border-color);
-            display: none;
+            border-bottom: 1px solid var(--border-color); 
         }
-        .ai-result-box h4 {
-            margin: 0 0 10px 0;
-            color: var(--primary-color);
-        }
-        .ai-result-box p {
-            margin: 0;
-            line-height: 1.6;
-            color: var(--text-color);
-        }
-        .prize-display {
-            font-size: 0.9em;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            margin-top: -10px;
-            padding-bottom: 15px;
+        th {
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div id="loginView" class="view active">
+<div class="container">
+    <!-- VISTA DE LOGIN PARA EL DUEÑO DEL NEGOCIO -->
+    <div id="businessLoginView" class="view active">
         <div class="card">
-            <div class="card-header">
-                <!-- ▼▼▼ 1. PARA CAMBIAR EL LOGO ▼▼▼ -->
-                <!-- Reemplaza el <div> con <img src="URL_DEL_LOGO"> si prefieres una imagen -->
-                <div class="icon">☕</div>
-                
-                <!-- ▼▼▼ 2. PARA CAMBIAR EL NOMBRE DEL NEGOCIO ▼▼▼ -->
-                <h2 id="loginBusinessName"></h2>
-                
-                <!-- ▼▼▼ 3. PARA CAMBIAR LA FRASE DE BIENVENIDA ▼▼▼ -->
-                <p>Consulta tu tarjeta de lealtad</p>
+            <h1 style="text-align:center;">Acceso a Negocios</h1>
+            <p style="text-align:center;">Ingresa tus credenciales para ver tu panel de clientes.</p>
+            <form id="businessLoginForm">
+                <input type="email" id="businessEmail" placeholder="Email de Administrador" required>
+                <input type="password" id="businessPassword" placeholder="Contraseña" required>
+                <button type="submit" class="btn">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- VISTA DEL CRM (Inicialmente oculta) -->
+    <div id="crmView" class="view">
+        <div style="overflow: auto; margin-bottom: 10px;">
+            <h1 style="float: left;"><span id="businessName"></span> - Panel de Clientes</h1>
+            <button onclick="CRM.logout()" class="btn btn-logout">Salir</button>
+        </div>
+        <div class="card">
+            <input type="text" id="searchInput" placeholder="Buscar cliente por nombre o email...">
+            <div class="table-container">
+                <table id="clientsTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Sellos</th>
+                            <th>Fecha de Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-            <form id="loginForm">
-                <div class="form-group"><label for="loginIdentifier">Email o Teléfono</label><input type="text" id="loginIdentifier" required></div>
-                <div class="form-group"><label for="loginPin">Código PIN (4 dígitos)</label><input type="password" id="loginPin" inputmode="numeric" maxlength="4" pattern="\d{4}" required></div>
-                <button type="submit" class="btn btn-primary">Ver Mi Tarjeta</button>
-            </form>
-            <a class="text-link" id="goToRegister">¿Primera vez? Regístrate aquí</a>
-        </div>
-    </div>
-
-    <div id="registerView" class="view">
-        <div class="card">
-            <div class="card-header"><div class="icon">📝</div><h2>Crear Cuenta</h2><p>Únete al programa de lealtad</p></div>
-            <form id="registerForm">
-                <div class="form-group"><label for="registerName">Nombre Completo</label><input type="text" id="registerName" required></div>
-                <div class="form-group"><label for="registerEmail">Email</label><input type="email" id="registerEmail" required></div>
-                <div class="form-group"><label for="registerPhone">Teléfono (10 dígitos)</label><input type="tel" id="registerPhone" required></div>
-                <div class="form-group"><label for="registerBirthday">Fecha de Cumpleaños 🎂</label><input type="date" id="registerBirthday"></div>
-                <div class="form-group"><label for="registerPin">Crear PIN (4 dígitos)</label><input type="password" id="registerPin" inputmode="numeric" maxlength="4" pattern="\d{4}" required></div>
-                <button type="submit" class="btn btn-secondary">Crear Cuenta</button>
-            </form>
-            <a class="text-link" id="goToLogin">← Volver al login</a>
-        </div>
-    </div>
-
-    <div id="loyaltyCardView" class="view">
-        <div class="card">
-            <div class="card-header"><h2 id="loyaltyBusinessName"></h2><p>Bienvenido, <span id="userName"></span></p></div>
-            <p>Progreso actual</p>
-            <div class="progress-bar"><div class="progress-bar-fill" id="progressBarFill"></div></div>
-            <div class="stamps-grid" id="stampsGrid"></div>
-            <p id="stampsRemainingText"></p>
-            <p class="prize-display" id="prizeTextDisplay"></p>
-        </div>
-        <div class="card actions">
-            <h3>Acciones</h3>
-            <button class="btn btn-secondary" id="goToTicket">Validar Compra</button>
-            <button class="btn btn-primary" style="background-color: var(--gemini-color);" id="goToAiBarista">La Sabiduría del Barista ✨</button>
-            <button class="btn btn-primary" style="background-color: #6c757d;" id="logoutButton">Salir</button>
-        </div>
-    </div>
-
-    <div id="ticketView" class="view">
-        <div class="card">
-            <div class="card-header"><div class="icon">🎟️</div><h2>Validar Compra</h2><p>Ingresa tu número de ticket para ganar sellos</p></div>
-            <form id="ticketForm">
-                <div class="form-group"><label for="ticketId">Número de Ticket</label><input type="text" id="ticketId" required></div>
-                <button type="submit" class="btn btn-secondary">Validar Ticket</button>
-            </form>
-            <a class="text-link" id="backToLoyaltyFromTicket">← Volver a mi tarjeta</a>
-        </div>
-    </div>
-    
-    <div id="aiBaristaView" class="view">
-        <div class="card">
-            <div class="card-header"><div class="icon">🔮</div><h2>Tu galleta de la suerte</h2><p>Presiona el botón para recibir tu frase del día.</p></div>
-            <form id="aiBaristaForm">
-                <button type="submit" class="btn btn-primary" style="background-color: var(--gemini-color);">Obtener mi Frase</button>
-            </form>
-            <div class="ai-result-box" id="aiResultBox">
-                 <h4>Tu frase del día:</h4>
-                 <p id="aiResultText"></p>
-            </div>
-            <a class="text-link" id="backToLoyaltyFromAi">← Volver a mi tarjeta</a>
+            <div id="loader" style="display:none; text-align:center; padding:50px;">Cargando clientes...</div>
         </div>
     </div>
 </div>
 
 <script>
-    const app = {
+    const CRM = {
         config: {
-            // ▼▼▼ 1. Pega la URL de tu Google Apps Script ▼▼▼
+            // ▼▼▼ ¡IMPORTANTE! Pega la URL de tu Google Apps Script aquí ▼▼▼
             scriptUrl: "https://script.google.com/macros/s/AKfycbyvpE_-wYZd0a3v5yatwWzyTV-4bFBePi8jxy5dRONBBKVsuTkNa32StqBuiIILF3SQ/exec",
-            
-            // ▼▼▼ 2. Cambia este ID por el de cada negocio ▼▼▼
-            // Debe coincidir con el `BusinessID` de tu hoja "Negocios".
-            businessId: "cafe-delicioso", 
-            
-            // ▼▼▼ 3. Personaliza los detalles del negocio ▼▼▼
-            businessName: "Café Delicioso",
-            totalStamps: 10,
-            prizeText: "Premio: ¡Un croissant!"
         },
-        state: { currentUser: null },
+        state: { 
+            currentBusiness: null, 
+            allClients: [] 
+        },
         init() {
-            document.getElementById('loginBusinessName').textContent = this.config.businessName;
+            document.getElementById('businessLoginForm').addEventListener('submit', this.handleBusinessLogin.bind(this));
+            document.getElementById('searchInput').addEventListener('keyup', this.filterTable.bind(this));
             
-            document.getElementById('loginForm').addEventListener('submit', this.handleLogin.bind(this));
-            document.getElementById('registerForm').addEventListener('submit', this.handleRegister.bind(this));
-            document.getElementById('ticketForm').addEventListener('submit', this.handleTicket.bind(this));
-            document.getElementById('aiBaristaForm').addEventListener('submit', this.handleAiRecommendation.bind(this));
-
-            document.getElementById('goToRegister').addEventListener('click', () => this.navigateTo('registerView'));
-            document.getElementById('goToLogin').addEventListener('click', () => this.navigateTo('loginView'));
-            document.getElementById('goToTicket').addEventListener('click', () => this.navigateTo('ticketView'));
-            document.getElementById('goToAiBarista').addEventListener('click', () => this.navigateTo('aiBaristaView'));
-            document.getElementById('logoutButton').addEventListener('click', () => this.logout());
-            document.getElementById('backToLoyaltyFromTicket').addEventListener('click', () => this.navigateTo('loyaltyCardView'));
-            document.getElementById('backToLoyaltyFromAi').addEventListener('click', () => this.navigateTo('loyaltyCardView'));
-
-            const savedUser = sessionStorage.getItem('currentUser');
-            if (savedUser) {
-                this.state.currentUser = JSON.parse(savedUser);
-                this.renderLoyaltyCard();
-                this.navigateTo('loyaltyCardView');
+            const savedBusiness = sessionStorage.getItem('currentBusiness');
+            if (savedBusiness) {
+                this.state.currentBusiness = JSON.parse(savedBusiness);
+                this.showDashboard();
             }
         },
         setLoading(form, isLoading) {
@@ -277,119 +179,95 @@
             button.textContent = isLoading ? 'Procesando...' : (button.dataset.originalText || 'Enviar');
         },
         async apiCall(action, data) {
-            const payload = { ...data, businessId: this.config.businessId };
             try {
-                const response = await fetch(this.config.scriptUrl, { method: 'POST', mode: 'cors', body: JSON.stringify({ action, data: payload }) });
+                const response = await fetch(this.config.scriptUrl, { 
+                    method: 'POST', 
+                    mode: 'cors', 
+                    body: JSON.stringify({ action, data }) 
+                });
                 return await response.json();
             } catch (error) { 
                 console.error("API Call Error:", error);
-                return { status: "error", message: "Error de conexión." }; 
+                return { status: "error", message: "Error de conexión. Revisa la consola para más detalles." }; 
             }
         },
         navigateTo(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
         },
-        async handleLogin(e) {
-            e.preventDefault(); 
+        async handleBusinessLogin(e) {
+            e.preventDefault();
             this.setLoading(e.target, true);
-            const result = await this.apiCall('login', { 
-                identifier: document.getElementById('loginIdentifier').value, 
-                pin: document.getElementById('loginPin').value 
-            });
+            const email = document.getElementById('businessEmail').value;
+            const password = document.getElementById('businessPassword').value;
+            const result = await this.apiCall('businessLogin', { email, password });
             this.setLoading(e.target, false);
+            
             if (result.status === 'success') {
-                this.state.currentUser = result.userData;
-                sessionStorage.setItem('currentUser', JSON.stringify(result.userData));
-                this.renderLoyaltyCard(); 
-                this.navigateTo('loyaltyCardView');
-            } else { alert(result.message); }
-        },
-        async handleRegister(e) {
-            e.preventDefault(); 
-            this.setLoading(e.target, true);
-            const data = { 
-                name: document.getElementById('registerName').value, 
-                email: document.getElementById('registerEmail').value, 
-                phone: document.getElementById('registerPhone').value, 
-                birthday: document.getElementById('registerBirthday').value, 
-                pin: document.getElementById('registerPin').value 
-            };
-            const result = await this.apiCall('register', data);
-            this.setLoading(e.target, false);
-            if (result.status === 'success') {
-                alert('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
-                e.target.reset(); 
-                this.navigateTo('loginView');
-            } else { alert(result.message); }
-        },
-        async handleTicket(e) {
-            e.preventDefault(); 
-            this.setLoading(e.target, true);
-            const result = await this.apiCall('validateTicket', { 
-                ticketId: document.getElementById('ticketId').value, 
-                userEmail: this.state.currentUser.email 
-            });
-            this.setLoading(e.target, false);
-            if (result.status === 'success') {
-                alert(result.message);
-                this.state.currentUser.stamps = result.newStamps;
-                sessionStorage.setItem('currentUser', JSON.stringify(this.state.currentUser));
-                this.renderLoyaltyCard(); 
-                this.navigateTo('loyaltyCardView');
-                e.target.reset();
-            } else { alert(result.message); }
-        },
-        async handleAiRecommendation(e) {
-            e.preventDefault(); 
-            this.setLoading(e.target, true);
-            const aiResultBox = document.getElementById('aiResultBox');
-            const aiResultText = document.getElementById('aiResultText');
-            aiResultBox.style.display = 'none';
-            const result = await this.apiCall('getAiSuggestion', {});
-            this.setLoading(e.target, false);
-            if (result.status === 'success' && result.text) {
-                aiResultText.innerHTML = result.text;
-                aiResultBox.style.display = 'block';
-            } else {
-                aiResultText.textContent = 'Lo siento, la inspiración del barista está en pausa. Inténtalo de nuevo.';
-                aiResultBox.style.display = 'block';
+                this.state.currentBusiness = result.businessData;
+                sessionStorage.setItem('currentBusiness', JSON.stringify(result.businessData));
+                this.showDashboard();
+            } else { 
+                alert(result.message); 
             }
         },
-        renderLoyaltyCard() {
-            document.getElementById('loyaltyBusinessName').textContent = this.config.businessName;
-            document.getElementById('prizeTextDisplay').textContent = this.config.prizeText;
-            const user = this.state.currentUser;
-            document.getElementById('userName').textContent = user.name.split(' ')[0];
-            const stamps = parseInt(user.stamps);
-            const progress = (stamps / this.config.totalStamps) * 100;
-            document.getElementById('progressBarFill').style.width = `${Math.min(progress, 100)}%`;
-            const stampsGrid = document.getElementById('stampsGrid');
-            stampsGrid.innerHTML = '';
-            for (let i = 1; i <= this.config.totalStamps; i++) {
-                const stampEl = document.createElement('div'); stampEl.classList.add('stamp');
-                const iconEl = document.createElement('span'); iconEl.classList.add('stamp-icon');
-                if (i <= stamps) { iconEl.textContent = '☕'; } else { stampEl.classList.add('empty'); }
-                if (i === this.config.totalStamps) {
-                    iconEl.textContent = '🎁';
-                    if (stamps >= this.config.totalStamps) stampEl.classList.add('reward');
-                }
-                stampEl.appendChild(iconEl); stampsGrid.appendChild(stampEl);
+        showDashboard() {
+            this.navigateTo('crmView');
+            document.getElementById('businessName').textContent = this.state.currentBusiness.name;
+            this.fetchClients();
+        },
+        async fetchClients() {
+            document.getElementById('loader').style.display = 'block';
+            document.querySelector("#clientsTable tbody").innerHTML = '';
+            
+            const result = await this.apiCall('getAllUsers', { businessId: this.state.currentBusiness.id });
+            
+            document.getElementById('loader').style.display = 'none';
+            if (result.status === 'success') {
+                this.state.allClients = result.data;
+                this.renderTable(this.state.allClients);
+            } else { 
+                alert('Error al cargar los clientes: ' + result.message); 
             }
-            const remaining = this.config.totalStamps - stamps;
-            document.getElementById('stampsRemainingText').textContent = remaining > 0 ? `¡Te faltan ${remaining} sellos para tu premio!` : '¡Felicidades! Ya puedes reclamar tu premio.';
+        },
+        renderTable(clients) {
+            const tableBody = document.querySelector("#clientsTable tbody");
+            tableBody.innerHTML = '';
+            if (clients.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No se han registrado clientes aún.</td></tr>';
+                return;
+            }
+            clients.forEach(client => {
+                const row = document.createElement('tr');
+                const registrationDate = client.FechaRegistro 
+                    ? new Date(client.FechaRegistro).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })
+                    : 'N/A';
+                row.innerHTML = `
+                    <td>${client.Nombre || 'N/A'}</td>
+                    <td>${client.Email || 'N/A'}</td>
+                    <td>${client.Telefono || 'N/A'}</td>
+                    <td>${client.SellosActuales || 0}</td>
+                    <td>${registrationDate}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        },
+        filterTable(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredClients = this.state.allClients.filter(client => 
+                (client.Nombre && client.Nombre.toLowerCase().includes(searchTerm)) || 
+                (client.Email && client.Email.toLowerCase().includes(searchTerm))
+            );
+            this.renderTable(filteredClients);
         },
         logout() {
-            sessionStorage.removeItem('currentUser');
-            this.state.currentUser = null;
-            document.getElementById('loginForm').reset();
-            this.navigateTo('loginView');
+            sessionStorage.removeItem('currentBusiness');
+            this.state.currentBusiness = null;
+            document.getElementById('businessLoginForm').reset();
+            this.navigateTo('businessLoginView');
         }
     };
-
-    document.addEventListener("DOMContentLoaded", () => {
-      app.init();
-    });
+    CRM.init();
 </script>
 
 </body>
