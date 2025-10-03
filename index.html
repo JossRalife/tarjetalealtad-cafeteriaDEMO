@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary-color: #8A2BE2; /* Un morado elegante */
-            --secondary-color: #28a745; /* Un verde para acciones positivas */
-            --gemini-color: #ff69b4; /* Un color divertido para la función de IA */
+            --primary-color: #8A2BE2; 
+            --secondary-color: #28a745; 
+            --gemini-color: #ff69b4; 
             --background-color: #f4f6f8; 
             --card-color: #ffffff; 
             --text-color: #333; 
@@ -42,7 +42,6 @@
             text-align: center; 
             margin-bottom: 20px; 
         }
-        /* -- MODIFICACIÓN PARA CENTRAR EL ÍCONO -- */
         .card-header { 
             margin-bottom: 25px; 
             display: flex;
@@ -143,18 +142,17 @@
 <body>
 
 <div class="app-container">
-    <!-- VISTAS HTML (Login, Registro, etc.) -->
     <div id="loginView" class="view active">
         <div class="card">
             <div class="card-header">
-                <!-- ▼▼▼ PERSONALIZACIÓN: LOGO ▼▼▼ -->
-                <!-- Cambia '☕' por una etiqueta <img> con el logo de tu cliente. Ej: <img src="URL_DEL_LOGO"> -->
+                <!-- ▼▼▼ 1. PARA CAMBIAR EL LOGO ▼▼▼ -->
+                <!-- Reemplaza el <div> con <img src="URL_DEL_LOGO"> si prefieres una imagen -->
                 <div class="icon">☕</div>
                 
-                <!-- ▼▼▼ PERSONALIZACIÓN: NOMBRE DEL NEGOCIO ▼▼▼ -->
-                <h2>Café Delicioso</h2>
-
-                <!-- ▼▼▼ PERSONALIZACIÓN: FRASE SECUNDARIA ▼▼▼ -->
+                <!-- ▼▼▼ 2. PARA CAMBIAR EL NOMBRE DEL NEGOCIO ▼▼▼ -->
+                <h2 id="loginBusinessName">Café Delicioso</h2>
+                
+                <!-- ▼▼▼ 3. PARA CAMBIAR LA FRASE DE BIENVENIDA ▼▼▼ -->
                 <p>Consulta tu tarjeta de lealtad</p>
             </div>
             <form id="loginForm">
@@ -183,11 +181,7 @@
 
     <div id="loyaltyCardView" class="view">
         <div class="card">
-            <div class="card-header">
-                <!-- También puedes personalizar el nombre del negocio aquí si lo deseas -->
-                <h2>Café Delicioso</h2>
-                <p>Bienvenido, <span id="userName"></span></p>
-            </div>
+            <div class="card-header"><h2 id="loyaltyBusinessName"></h2><p>Bienvenido, <span id="userName"></span></p></div>
             <p>Progreso actual</p>
             <div class="progress-bar"><div class="progress-bar-fill" id="progressBarFill"></div></div>
             <div class="stamps-grid" id="stampsGrid"></div>
@@ -234,17 +228,29 @@
 <script>
     const app = {
         config: {
-            // ▼▼▼ ¡ESTE ES EL ÚNICO LUGAR QUE DEBES EDITAR! ▼▼▼
             scriptUrl: "https://script.google.com/macros/s/AKfycbyl2bL3ys0V89jdZJGJ_QX2iZqfa0k3bLuSR1jhXtGcoT2CeaIyC_qHHnGFIioUbzrt/exec",
+            // ▼▼▼ ¡ESTE ID ES CLAVE! ▼▼▼
+            // Para cada negocio, debes crear una copia de este archivo y cambiar este ID.
+            // Debe coincidir EXACTAMENTE con el `BusinessID` que pusiste en tu hoja "Negocios".
+            businessId: "cafe-delicioso", 
+            
+            // --- Parámetros personalizables por negocio ---
+            businessName: "Café Delicioso", // El nombre que se mostrará en la app
             totalStamps: 10,
         },
-        // El resto del código JavaScript no necesita cambios
-        state: { currentUser: null, currentView: 'loginView' },
+        state: { currentUser: null },
         init() {
+            // --- Llenar los datos personalizables en la app ---
+            document.getElementById('loginBusinessName').textContent = this.config.businessName;
+            document.getElementById('loyaltyBusinessName').textContent = this.config.businessName;
+
+            // --- Listeners de los formularios ---
             document.getElementById('loginForm').addEventListener('submit', this.handleLogin.bind(this));
             document.getElementById('registerForm').addEventListener('submit', this.handleRegister.bind(this));
             document.getElementById('ticketForm').addEventListener('submit', this.handleTicket.bind(this));
             document.getElementById('aiBaristaForm').addEventListener('submit', this.handleAiRecommendation.bind(this));
+            
+            // --- Revisa si ya hay una sesión activa ---
             const savedUser = sessionStorage.getItem('currentUser');
             if (savedUser) {
                 this.state.currentUser = JSON.parse(savedUser);
@@ -254,70 +260,90 @@
         },
         setLoading(form, isLoading) {
             const button = form.querySelector('button[type="submit"]');
+            if (!button) return;
             if (!button.dataset.originalText && isLoading) button.dataset.originalText = button.textContent;
             button.disabled = isLoading;
             button.textContent = isLoading ? 'Procesando...' : button.dataset.originalText;
         },
         async apiCall(action, data) {
-            if (this.config.scriptUrl === "URL_DE_TU_IMPLEMENTACION_DE_GOOGLE_APPS_SCRIPT_VA_AQUI") {
-                alert("ERROR: Debes configurar la URL de Google Apps Script en el archivo index.html.");
-                return { status: "error", message: "Configuración pendiente." };
-            }
+            const payload = { 
+                ...data, 
+                businessId: this.config.businessId 
+            };
             try {
-                const response = await fetch(this.config.scriptUrl, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, data }) });
+                const response = await fetch(this.config.scriptUrl, { method: 'POST', mode: 'cors', body: JSON.stringify({ action, data: payload }) });
                 return await response.json();
-            } catch (error) {
-                return { status: "error", message: "Error de conexión." };
+            } catch (error) { 
+                console.error("API Call Error:", error);
+                return { status: "error", message: "Error de conexión." }; 
             }
         },
         navigateTo(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-            this.state.currentView = viewId;
         },
         async handleLogin(e) {
-            e.preventDefault(); this.setLoading(e.target, true);
-            const result = await this.apiCall('login', { identifier: document.getElementById('loginIdentifier').value, pin: document.getElementById('loginPin').value });
+            e.preventDefault(); 
+            this.setLoading(e.target, true);
+            const result = await this.apiCall('login', { 
+                identifier: document.getElementById('loginIdentifier').value, 
+                pin: document.getElementById('loginPin').value 
+            });
             this.setLoading(e.target, false);
             if (result.status === 'success') {
                 this.state.currentUser = result.userData;
                 sessionStorage.setItem('currentUser', JSON.stringify(result.userData));
-                this.renderLoyaltyCard(); this.navigateTo('loyaltyCardView');
+                this.renderLoyaltyCard(); 
+                this.navigateTo('loyaltyCardView');
             } else { alert(result.message); }
         },
         async handleRegister(e) {
-            e.preventDefault(); this.setLoading(e.target, true);
-            const data = { name: document.getElementById('registerName').value, email: document.getElementById('registerEmail').value, phone: document.getElementById('registerPhone').value, birthday: document.getElementById('registerBirthday').value, pin: document.getElementById('registerPin').value };
+            e.preventDefault(); 
+            this.setLoading(e.target, true);
+            const data = { 
+                name: document.getElementById('registerName').value, 
+                email: document.getElementById('registerEmail').value, 
+                phone: document.getElementById('registerPhone').value, 
+                birthday: document.getElementById('registerBirthday').value, 
+                pin: document.getElementById('registerPin').value 
+            };
             const result = await this.apiCall('register', data);
             this.setLoading(e.target, false);
             if (result.status === 'success') {
                 alert('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
-                e.target.reset(); this.navigateTo('loginView');
+                e.target.reset(); 
+                this.navigateTo('loginView');
             } else { alert(result.message); }
         },
         async handleTicket(e) {
-            e.preventDefault(); this.setLoading(e.target, true);
-            const result = await this.apiCall('validateTicket', { ticketId: document.getElementById('ticketId').value, userEmail: this.state.currentUser.email });
+            e.preventDefault(); 
+            this.setLoading(e.target, true);
+            const result = await this.apiCall('validateTicket', { 
+                ticketId: document.getElementById('ticketId').value, 
+                userEmail: this.state.currentUser.email 
+            });
             this.setLoading(e.target, false);
             if (result.status === 'success') {
                 alert(result.message);
                 this.state.currentUser.stamps = result.newStamps;
                 sessionStorage.setItem('currentUser', JSON.stringify(this.state.currentUser));
-                this.renderLoyaltyCard(); this.navigateTo('loyaltyCardView');
+                this.renderLoyaltyCard(); 
+                this.navigateTo('loyaltyCardView');
                 e.target.reset();
             } else { alert(result.message); }
         },
         async handleAiRecommendation(e) {
-            e.preventDefault(); this.setLoading(e.target, true);
+            e.preventDefault(); 
+            this.setLoading(e.target, true);
             const aiResultBox = document.getElementById('aiResultBox');
             const aiResultText = document.getElementById('aiResultText');
             aiResultBox.style.display = 'none';
             const userInput = document.getElementById('aiPrompt').value;
-            const systemPrompt = "Eres un barista experto y amigable en una cafetería llamada 'Café Delicioso'. Un cliente te dice que se siente o le apetece '" + userInput + "'. Basado en eso, sugiérele una bebida de un menú de cafetería típico (espresso, americano, latte, cappuccino, mocha, frappé, té chai, cold brew, etc.) y dale una descripción creativa y antojable en no más de 40 palabras. Responde únicamente con la sugerencia, sin frases introductorias como 'Claro, te recomiendo...' o similares. Empieza directamente con el nombre de la bebida.";
+            const systemPrompt = `Eres un barista experto en '${this.config.businessName}'. Un cliente te dice que le apetece '${userInput}'. Sugiérele una bebida de cafetería y dale una descripción antojable en menos de 40 palabras. Responde únicamente con la sugerencia, empezando directamente con el nombre de la bebida en negritas.`;
             const result = await this.geminiApiCall(systemPrompt);
             this.setLoading(e.target, false);
             if (result) {
-                aiResultText.textContent = result;
+                aiResultText.innerHTML = result; // Usamos innerHTML para que reconozca las negritas
                 aiResultBox.style.display = 'block';
             } else {
                 aiResultText.textContent = 'Lo siento, mis ideas se fueron a tomar un café. Inténtalo de nuevo.';
@@ -330,9 +356,10 @@
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) { console.error("Error en la respuesta de la API de Gemini:", await response.text()); return null; }
-                const result = await response.json(); const candidate = result.candidates?.[0];
+                const result = await response.json(); 
+                const candidate = result.candidates?.[0];
                 if (candidate && candidate.content?.parts?.[0]?.text) { return candidate.content.parts[0].text; }
-                else { console.error("Estructura de respuesta inesperada:", result); return "No se pudo obtener una respuesta válida."; }
+                else { return "No se pudo obtener una respuesta válida."; }
             } catch (error) { console.error("Error al llamar a la API de Gemini:", error); return null; }
         },
         renderLoyaltyCard() {
@@ -340,7 +367,7 @@
             document.getElementById('userName').textContent = user.name.split(' ')[0];
             const stamps = parseInt(user.stamps);
             const progress = (stamps / this.config.totalStamps) * 100;
-            document.getElementById('progressBarFill').style.width = `${progress}%`;
+            document.getElementById('progressBarFill').style.width = `${Math.min(progress, 100)}%`;
             const stampsGrid = document.getElementById('stampsGrid');
             stampsGrid.innerHTML = '';
             for (let i = 1; i <= this.config.totalStamps; i++) {
@@ -354,13 +381,13 @@
                 stampEl.appendChild(iconEl); stampsGrid.appendChild(stampEl);
             }
             const remaining = this.config.totalStamps - stamps;
-            document.getElementById('stampsRemainingText').textContent = remaining > 0 ? `¡Te faltan ${remaining} sellos para tu premio!` : '¡Felicidades! Ya puedes pedir tu premio.';
+            document.getElementById('stampsRemainingText').textContent = remaining > 0 ? `¡Te faltan ${remaining} sellos para tu premio!` : '¡Felicidades! Ya puedes reclamar tu premio.';
         },
         logout() {
             sessionStorage.removeItem('currentUser');
             this.state.currentUser = null;
-            this.navigateTo('loginView');
             document.getElementById('loginForm').reset();
+            this.navigateTo('loginView');
         }
     };
     app.init();
