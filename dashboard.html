@@ -49,7 +49,7 @@
         }
 
         #crmView .card {
-            max-width: none; /* Permitir que la tarjeta del CRM ocupe más espacio */
+            max-width: none;
         }
         
         input { 
@@ -111,7 +111,6 @@
 <body>
 
 <div class="container">
-    <!-- VISTA DE LOGIN PARA EL DUEÑO DEL NEGOCIO -->
     <div id="businessLoginView" class="view active">
         <div class="card">
             <h1 style="text-align:center;">Acceso a Negocios</h1>
@@ -124,7 +123,6 @@
         </div>
     </div>
 
-    <!-- VISTA DEL CRM (Inicialmente oculta) -->
     <div id="crmView" class="view">
         <div style="overflow: auto; margin-bottom: 10px;">
             <h1 style="float: left;"><span id="businessName"></span> - Panel de Clientes</h1>
@@ -155,7 +153,7 @@
     const CRM = {
         config: {
             // ▼▼▼ ¡IMPORTANTE! Pega la URL de tu Google Apps Script aquí ▼▼▼
-            scriptUrl: "https://script.google.com/macros/s/AKfycbwA9_bWhDuZoz2qI-ffI6iQ-vVd0WNKXtFxgqYQLRIWYDnagBwP2rQO2K2Edk4P-G-M/exec",
+            scriptUrl: "https://script.google.com/macros/s/AKfycbyaLKqiQxwpNGyOKvwybueUtNyYrZNrgIuMSeFvzsFNAbGZpdLjyw8Iyj9rthlmr1ia/exec",
         },
         state: { 
             currentBusiness: null, 
@@ -185,10 +183,15 @@
                     mode: 'cors', 
                     body: JSON.stringify({ action, data }) 
                 });
-                return await response.json();
+                if (!response.ok) {
+                    console.error("Error de red o del servidor:", response.status, response.statusText);
+                    return { status: "error", message: `Error del servidor (${response.status}). Revisa la configuración.` };
+                }
+                const result = await response.json();
+                return result;
             } catch (error) { 
                 console.error("API Call Error:", error);
-                return { status: "error", message: "Error de conexión. Revisa la consola para más detalles." }; 
+                return { status: "error", message: "Error de conexión. Revisa la consola y las ejecuciones en Apps Script." }; 
             }
         },
         navigateTo(viewId) {
