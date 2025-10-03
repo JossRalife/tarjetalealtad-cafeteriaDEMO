@@ -153,14 +153,8 @@
     <div id="loginView" class="view active">
         <div class="card">
             <div class="card-header">
-                <!-- ▼▼▼ 1. PARA CAMBIAR EL LOGO ▼▼▼ -->
-                <!-- Reemplaza el <div> con <img src="URL_DEL_LOGO"> si prefieres una imagen -->
                 <div class="icon">☕</div>
-                
-                <!-- ▼▼▼ 2. PARA CAMBIAR EL NOMBRE DEL NEGOCIO ▼▼▼ -->
                 <h2 id="loginBusinessName"></h2>
-                
-                <!-- ▼▼▼ 3. PARA CAMBIAR LA FRASE DE BIENVENIDA ▼▼▼ -->
                 <p>Consulta tu tarjeta de lealtad</p>
             </div>
             <form id="loginForm">
@@ -217,7 +211,7 @@
     
     <div id="aiBaristaView" class="view">
         <div class="card">
-            <div class="card-header"><div class="icon">🔮</div><h2>Tu galleta de la suerte</h2><p>Presiona el botón para recibir tu frase del día.</p></div>
+            <div class="card-header"><div class="icon">🔮</div><h2>La Sabiduría del Barista</h2><p>Presiona el botón para recibir tu frase del día.</p></div>
             <form id="aiBaristaForm">
                 <button type="submit" class="btn btn-primary" style="background-color: var(--gemini-color);">Obtener mi Frase</button>
             </form>
@@ -233,17 +227,11 @@
 <script>
     const app = {
         config: {
-            // ▼▼▼ 1. Pega la URL de tu Google Apps Script ▼▼▼
-            scriptUrl: "https://script.google.com/macros/s/AKfycbwA9_bWhDuZoz2qI-ffI6iQ-vVd0WNKXtFxgqYQLRIWYDnagBwP2rQO2K2Edk4P-G-M/exec",
-            
-            // ▼▼▼ 2. Cambia este ID por el de cada negocio ▼▼▼
-            // Debe coincidir con el `BusinessID` de tu hoja "Negocios".
+            scriptUrl: "https://script.google.com/macros/s/AKfycbyaLKqiQxwpNGyOKvwybueUtNyYrZNrgIuMSeFvzsFNAbGZpdLjyw8Iyj9rthlmr1ia/exec",
             businessId: "cafe-delicioso", 
-            
-            // ▼▼▼ 3. Personaliza los detalles del negocio ▼▼▼
             businessName: "Café Delicioso",
             totalStamps: 10,
-            prizeText: "Premio:¡Un croissant!"
+            prizeText: "Premio: ¡Un café americano o un croissant!"
         },
         state: { currentUser: null },
         init() {
@@ -280,10 +268,15 @@
             const payload = { ...data, businessId: this.config.businessId };
             try {
                 const response = await fetch(this.config.scriptUrl, { method: 'POST', mode: 'cors', body: JSON.stringify({ action, data: payload }) });
-                return await response.json();
+                if (!response.ok) {
+                    console.error("Error de red o del servidor:", response.status, response.statusText);
+                    return { status: "error", message: `Error del servidor (${response.status}). Revisa la configuración.` };
+                }
+                const result = await response.json();
+                return result;
             } catch (error) { 
                 console.error("API Call Error:", error);
-                return { status: "error", message: "Error de conexión." }; 
+                return { status: "error", message: "Error de conexión. Revisa la consola y las ejecuciones en Apps Script." }; 
             }
         },
         navigateTo(viewId) {
@@ -386,7 +379,6 @@
             this.navigateTo('loginView');
         }
     };
-
     document.addEventListener("DOMContentLoaded", () => {
       app.init();
     });
