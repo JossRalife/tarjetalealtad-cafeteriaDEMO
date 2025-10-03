@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Negocios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary-color: #8A2BE2; 
+            --background-color: #f4f6f8; 
+            --card-color: #ffffff; 
+            --text-color: #333; 
+            --border-color: #e0e0e0; 
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--background-color); 
+            margin: 0; 
+            padding: 20px; 
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container { 
+            width: 100%;
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .view { display: none; } 
+        .view.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        h1, h2 { color: var(--primary-color); }
+        
+        .card { 
+            background-color: var(--card-color); 
+            border-radius: 12px; 
+            box-shadow: 0 4px_20px rgba(0,0,0,0.08); 
+            padding: 30px; 
+            margin-bottom: 20px; 
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #crmView .card {
+            max-width: none; /* Permitir que la tarjeta del CRM ocupe más espacio */
+        }
+        
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            font-size: 1em; 
+            margin-bottom: 20px; 
+            box-sizing: border-box; 
+        }
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: none; 
+            font-size: 1em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            background-color: var(--primary-color); 
+            color: white; 
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #6a1b9a;
+        }
+        .btn-logout {
+            background-color:#6c757d; 
+            width:auto; 
+            padding:10px 20px; 
+            float: right;
+            margin-bottom: 15px;
+        }
+        .btn-logout:hover {
+            background-color: #5a6268;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        th, td { 
+            padding: 12px 15px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        th {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- VISTA DE LOGIN PARA EL DUEÑO DEL NEGOCIO -->
+    <div id="businessLoginView" class="view active">
+        <div class="card">
+            <h1 style="text-align:center;">Acceso a Negocios</h1>
+            <p style="text-align:center;">Ingresa tus credenciales para ver tu panel de clientes.</p>
+            <form id="businessLoginForm">
+                <input type="email" id="businessEmail" placeholder="Email de Administrador" required>
+                <input type="password" id="businessPassword" placeholder="Contraseña" required>
+                <button type="submit" class="btn">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- VISTA DEL CRM (Inicialmente oculta) -->
+    <div id="crmView" class="view">
+        <div style="overflow: auto; margin-bottom: 10px;">
+            <h1 style="float: left;"><span id="businessName"></span> - Panel de Clientes</h1>
+            <button onclick="CRM.logout()" class="btn btn-logout">Salir</button>
+        </div>
+        <div class="card">
+            <input type="text" id="searchInput" placeholder="Buscar cliente por nombre o email...">
+            <div class="table-container">
+                <table id="clientsTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Sellos</th>
+                            <th>Fecha de Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="loader" style="display:none; text-align:center; padding:50px;">Cargando clientes...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const CRM = {
+        config: {
+            // ▼▼▼ ¡IMPORTANTE! Pega la URL de tu Google Apps Script aquí ▼▼▼
+            scriptUrl: "URL_DE_TU_IMPLEMENTACION_DE_GOOGLE_APPS_SCRIPT_VA_AQUI",
+        },
+        state: { 
+            currentBusiness: null, 
+            allClients: [] 
+        },
+        init() {
+            document.getElementById('businessLoginForm').addEventListener('submit', this.handleBusinessLogin.bind(this));
+            document.getElementById('searchInput').addEventListener('keyup', this.filterTable.bind(this));
+            
+            // Revisa si ya hay una sesión activa para no pedir login de nuevo
+            const savedBusiness = sessionStorage.getItem('currentBusiness');
+            if (savedBusiness) {
+                this.state.currentBusiness = JSON.parse(savedBusiness);
+                this.showDashboard();
+            }
+        },
+        async apiCall(action, data) {
+            try {
+                const response = await fetch(this.config.scriptUrl, { 
+                    method: 'POST', 
+                    mode: 'cors', 
+                    body: JSON.stringify({ action, data }) 
+                });
+                return await response.json();
+            } catch (error) { 
+                console.error("API Call Error:", error);
+                return { status: "error", message: "Error de conexión. Revisa la consola para más detalles." }; 
+            }
+        },
+        navigateTo(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        },
+        async handleBusinessLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('businessEmail').value;
+            const password = document.getElementById('businessPassword').value;
+            const result = await this.apiCall('businessLogin', { email, password });
+            
+            if (result.status === 'success') {
+                this.state.currentBusiness = result.businessData;
+                sessionStorage.setItem('currentBusiness', JSON.stringify(result.businessData));
+                this.showDashboard();
+            } else { 
+                alert(result.message); 
+            }
+        },
+        showDashboard() {
+            this.navigateTo('crmView');
+            document.getElementById('businessName').textContent = this.state.currentBusiness.name;
+            this.fetchClients();
+        },
+        async fetchClients() {
+            document.getElementById('loader').style.display = 'block';
+            document.querySelector("#clientsTable tbody").innerHTML = ''; // Limpiar antes de cargar
+            
+            const result = await this.apiCall('getAllUsers', { businessId: this.state.currentBusiness.id });
+            
+            document.getElementById('loader').style.display = 'none';
+            if (result.status === 'success') {
+                this.state.allClients = result.data;
+                this.renderTable(this.state.allClients);
+            } else { 
+                alert('Error al cargar los clientes: ' + result.message); 
+            }
+        },
+        renderTable(clients) {
+            const tableBody = document.querySelector("#clientsTable tbody");
+            tableBody.innerHTML = '';
+            if (clients.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No se han registrado clientes aún.</td></tr>';
+                return;
+            }
+            clients.forEach(client => {
+                const row = document.createElement('tr');
+                // Formatear la fecha para que sea más legible
+                const registrationDate = new Date(client.FechaRegistro).toLocaleDateString('es-MX', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+                row.innerHTML = `
+                    <td>${client.Nombre}</td>
+                    <td>${client.Email}</td>
+                    <td>${client.Telefono}</td>
+                    <td>${client.SellosActuales}</td>
+                    <td>${registrationDate}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        },
+        filterTable(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredClients = this.state.allClients.filter(client => 
+                client.Nombre.toLowerCase().includes(searchTerm) || 
+                client.Email.toLowerCase().includes(searchTerm)
+            );
+            this.renderTable(filteredClients);
+        },
+        logout() {
+            sessionStorage.removeItem('currentBusiness');
+            this.state.currentBusiness = null;
+            document.getElementById('businessLoginForm').reset();
+            this.navigateTo('businessLoginView');
+        }
+    };
+    CRM.init();
+</script>
+
+</body>
+</html>
+
