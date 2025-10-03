@@ -193,7 +193,7 @@
         <div class="card actions">
             <h3>Acciones</h3>
             <button class="btn btn-secondary" id="goToTicket">Validar Compra</button>
-            <button class="btn btn-primary" style="background-color: var(--gemini-color);" id="goToAiBarista">La Sabiduría del Barista ✨</button>
+            <button class="btn btn-primary" style="background-color: var(--gemini-color);" id="goToAiBarista">Tu Galleta de la Suerte ✨</button>
             <button class="btn btn-primary" style="background-color: #6c757d;" id="logoutButton">Salir</button>
         </div>
     </div>
@@ -211,12 +211,12 @@
     
     <div id="aiBaristaView" class="view">
         <div class="card">
-            <div class="card-header"><div class="icon">🔮</div><h2>La Sabiduría del Barista</h2><p>Presiona el botón para recibir tu frase del día.</p></div>
+            <div class="card-header"><div class="icon">🔮</div><h2>Tu Galleta de la Suerte</h2><p>Presiona el botón para recibir una frase muy random</p></div>
             <form id="aiBaristaForm">
                 <button type="submit" class="btn btn-primary" style="background-color: var(--gemini-color);">Obtener mi Frase</button>
             </form>
             <div class="ai-result-box" id="aiResultBox">
-                 <h4>Tu frase del día:</h4>
+                 <h4>Tu frase del hoy:</h4>
                  <p id="aiResultText"></p>
             </div>
             <a class="text-link" id="backToLoyaltyFromAi">← Volver a mi tarjeta</a>
@@ -231,7 +231,7 @@
             businessId: "cafe-delicioso", 
             businessName: "Café Delicioso",
             totalStamps: 10,
-            prizeText: "Premio: ¡Un café americano o un croissant!"
+            prizeText: "Premio: ¡Un croissant!"
         },
         state: { currentUser: null },
         init() {
