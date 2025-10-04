@@ -227,7 +227,7 @@
 <script>
     const app = {
         config: {
-            scriptUrl: "https://script.google.com/macros/s/AKfycbxMAgDABZ0HzOoXuZES9Mlr_bEBAb6qXcUBT2i2rRiTjzNb14J11uGGhax71KCDtiYE/exec",
+            scriptUrl: "https://script.google.com/macros/s/AKfycbysaeYjjLetV5fAYI14FliDrivstPyGibTBgLTJgTxDOhOF_w35BhAlEKp9_gRuNM-U/exec",
             businessId: "cafe-delicioso", 
             businessName: "Café Delicioso",
             totalStamps: 10,
@@ -354,7 +354,7 @@
             document.getElementById('prizeTextDisplay').textContent = this.config.prizeText;
             const user = this.state.currentUser;
             document.getElementById('userName').textContent = user.name.split(' ')[0];
-            const stamps = parseInt(user.stamps);
+            const stamps = parseInt(user.stamps) || 0;
             const progress = (stamps / this.config.totalStamps) * 100;
             document.getElementById('progressBarFill').style.width = `${Math.min(progress, 100)}%`;
             const stampsGrid = document.getElementById('stampsGrid');
